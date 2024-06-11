@@ -42,6 +42,7 @@ dependencies:
   phone_numbers_parser: ^4.2.0
   proximity_hash: ^2.1.0
   responsive_grid_list: ^1.2.3
+  raw_gnss: ^1.1.0+1
   sensors_plus: ^3.0.3
   settings_ui: ^2.0.2
   share_plus: ^7.1.0

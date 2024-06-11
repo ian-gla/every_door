@@ -24,6 +24,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'modes/gnss.dart';
+
 class BrowserPage extends ConsumerStatefulWidget {
   const BrowserPage();
 
@@ -157,6 +159,9 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
           editorPanel =
               PoiListPane(areaStatusPanel: statusPanel, isWide: isWide);
           break;
+        case EditorMode.gnss:
+          editorPanel = GNSSPane(areaStatusPanel: statusPanel, isWide: isWide);
+          break;
         case EditorMode.entrances:
           editorPanel = EntrancesPane(areaStatusPanel: statusPanel);
           break;
@@ -243,3 +248,4 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     return null;
   }
 }
+

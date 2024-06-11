@@ -101,6 +101,7 @@ class BrowserNavigationBar extends ConsumerWidget {
 
     const kEditorModes = [
       EditorMode.micromapping,
+      EditorMode.gnss,
       EditorMode.poi,
       EditorMode.entrances,
       EditorMode.notes,
@@ -108,7 +109,8 @@ class BrowserNavigationBar extends ConsumerWidget {
 
     final editorModeTooltips = {
       EditorMode.micromapping: loc.navMicromappingMode,
-      EditorMode.poi: loc.navPoiMode,
+      EditorMode.gnss: loc.navPoiMode,
+      EditorMode.poi: loc.navGNSSMode,
       EditorMode.entrances: loc.navEntrancesMode,
       EditorMode.notes: loc.navNotesMode,
     };

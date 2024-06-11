@@ -12,6 +12,7 @@ final navigationModeProvider = StateProvider<bool>((ref) => false);
 
 enum EditorMode {
   poi,
+  gnss,
   micromapping,
   entrances,
   notes,
@@ -19,6 +20,7 @@ enum EditorMode {
 
 const kEditorModeIcons = {
   EditorMode.poi: Icons.free_breakfast, // local_cafe icon is broken
+  EditorMode.gnss: Icons.satellite,
   EditorMode.micromapping: Icons.park,
   EditorMode.entrances: Icons.home,
   EditorMode.notes: Icons.note_alt,
@@ -26,13 +28,15 @@ const kEditorModeIcons = {
 
 const kEditorModeIconsOutlined = {
   EditorMode.poi: Icons.free_breakfast_outlined,
+  EditorMode.gnss: Icons.satellite_outlined,
   EditorMode.micromapping: Icons.park_outlined,
   EditorMode.entrances: Icons.home_outlined,
   EditorMode.notes: Icons.note_alt_outlined,
 };
 
 const kNextMode = {
-  EditorMode.micromapping: EditorMode.poi,
+  EditorMode.micromapping: EditorMode.gnss,
+  EditorMode.gnss: EditorMode.poi,
   EditorMode.poi: EditorMode.entrances,
   EditorMode.entrances: EditorMode.notes,
   EditorMode.notes: EditorMode.micromapping,
