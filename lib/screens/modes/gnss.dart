@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:every_door/helpers/good_tags.dart';
@@ -18,12 +20,19 @@ import 'package:every_door/providers/poi_filter.dart';
 import 'package:every_door/widgets/map.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_map/flutter_map.dart' show LatLngBounds;
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
+import 'package:logging/logging.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:raw_gnss/gnss_measurement_model.dart';
 import 'package:raw_gnss/gnss_status_model.dart';
 import 'package:raw_gnss/raw_gnss.dart';
+import 'package:circular_buffer/circular_buffer.dart';
+import 'package:system_clock/system_clock.dart';
+
 
 import '../../providers/gnss_filter.dart';
-
+final Logger log = Logger('gnss');
 class GNSSPane extends ConsumerStatefulWidget {
   final Widget? areaStatusPanel;
   final bool isWide;
@@ -45,10 +54,13 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
   void initState() {
     super.initState();
     _gnss = RawGnss();
+   //_gnss.gnssMeasurementEvents.listen(handleGNSS);
+    _gnss.gnssMeasurementEvents.listen(handleGNSS, onDone: help);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       updateFarFromUser();
       updateNearest();
     });
+    
   }
 
   updateFarFromUser() {
@@ -151,9 +163,12 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
     if (ref.read(trackingProvider)) {
       mapController.zoomToFit(data.map((e) => e.location));
     }
+
+
   }
 
   Widget _loadingSpinner() => const Center(child: CircularProgressIndicator());
+
   @override
   Widget build(BuildContext context) {
     final location = ref.read(effectiveLocationProvider);
@@ -225,24 +240,25 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
       );
     }
 
+    var amenityMap = AmenityMap(
+      initialLocation: location,
+      amenities: nearestPOI,
+      otherObjects: otherPOI,
+      controller: mapController,
+      onDragEnd: (pos) {
+        ref.read(effectiveLocationProvider.notifier).set(pos);
+      },
+      colorsFromLegend: isMicromapping,
+      drawNumbers: !isMicromapping || isZoomedIn,
+      drawZoomButtons: isMicromapping || farFromUser,
+    );
     return Flex(
       direction: widget.isWide ? Axis.horizontal : Axis.vertical,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           flex: 10,
-          child: AmenityMap(
-            initialLocation: location,
-            amenities: nearestPOI,
-            otherObjects: otherPOI,
-            controller: mapController,
-            onDragEnd: (pos) {
-              ref.read(effectiveLocationProvider.notifier).set(pos);
-            },
-            colorsFromLegend: isMicromapping,
-            drawNumbers: !isMicromapping || isZoomedIn,
-            drawZoomButtons: isMicromapping || farFromUser,
-          ),
+          child: amenityMap,
         ),
         if (widget.areaStatusPanel != null)
           widget.isWide
@@ -360,17 +376,67 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
       stream: _gnss.gnssStatusEvents,
     );
   }
-}
 
-Widget drawSatellites(AsyncSnapshot<GnssStatusModel> snapshot) {
-  return CustomPaint(
-    size: Size(80, 80),
-    painter: CirclePainter(snapshot),
-  );
-}
+  Widget drawSatellites(AsyncSnapshot<GnssStatusModel> snapshot) {
 
-bool uploadGnssData() {
-  return true;
+    return CustomPaint(
+      size: Size(80, 80),
+      painter: CirclePainter(snapshot, gnssStore),
+    );
+  }
+
+  final gnssStore = CircularBuffer<String>(1000);
+
+  bool uploadGnssData() {
+
+    DataStorage store = new DataStorage();
+    store.writeData(gnssStore);
+   // gnssStore.reset();
+    return true;
+  }
+
+  Future<void> handleGNSS(event)  async {
+    log.info("Got a MeasurementEvent");
+      final location =
+      ref.read(effectiveLocationProvider); // where we "actually" are!
+      final pos =  await Geolocator.getLastKnownPosition(
+          forceAndroidLocationManager:
+          ref.read(forceLocationProvider)); //where GPS thinks we are
+
+      final clock = event.clock;
+      final measurements = event.measurements;
+      String provider = 'gps';
+      double lng = location.longitude;
+      double lat = location.latitude;
+      double alt = pos?.altitude ?? 0.0;
+      double speed = pos?.speed ?? 0.0;
+      double accuracy = pos?.accuracy ?? 0.0;
+      DateTime time = pos?.timestamp ?? DateTime.now();
+      String out = "Fix, $provider, $lat, $lng, $alt, $speed, $accuracy, ${time.millisecondsSinceEpoch}, ${SystemClock.elapsedRealtime().inMicroseconds* 1000}" ;
+      gnssStore.add(out);
+      // for some reason Flutter can't access elapsedRealtimeNanos()
+      String out2 = "Raw, ${SystemClock.elapsedRealtime().inMicroseconds*1000}, ${clock?.timeNanos??0}, ${clock?.leapSecond ?? ''}, ${clock?.timeUncertaintyNanos ?? ''},"
+          "${clock?.fullBiasNanos}, ${clock?.biasNanos??''}, ${clock?.biasUncertaintyNanos??''}, ${clock?.driftNanosPerSecond??''},"
+          "${clock?.driftUncertaintyNanosPerSecond??''}, ${clock?.hardwareClockDiscontinuityCount??''},";
+      Measurement m;
+      for (m in measurements){
+          String out3 = "${m.svid}, ${m.timeOffsetNanos}, ${m.state}, ${m.receivedSvTimeNanos}, ${m.receivedSvTimeUncertaintyNanos}, ${m.cn0DbHz}, ${m.pseudorangeRateMetersPerSecond},"
+              "${m.pseudorangeRateUncertaintyMetersPerSecond}, ${m.accumulatedDeltaRangeState}, ${m.accumulatedDeltaRangeMeters}, ${m.accumulatedDeltaRangeUncertaintyMeters},"
+              "${m?.carrierFrequencyHz??''}, , , , ${m?.multipathIndicator??''}, ${m.snrInDb}, ${m.constellationType}, ${m.automaticGainControlLevelDb}, ${m.carrierFrequencyHz},"
+              "$lat, $lng, $alt";
+          //log.fine("${m.state}");
+          gnssStore.add(out2+out3);
+         // log.fine("$out2\n\t${out3}");
+         // log.info("constellation: ${m.accumulatedDeltaRangeUncertaintyMeters}");
+      }                  
+
+      log.finest("GnssStore size ${gnssStore.length}");
+
+  }
+
+  void help() {
+    log.info("streeam ended");
+  }
 }
 
 class CirclePainter extends CustomPainter {
@@ -380,8 +446,10 @@ class CirclePainter extends CustomPainter {
     // Use [PaintingStyle.fill] if you want the circle to be filled.
     ..style = PaintingStyle.stroke;
   late AsyncSnapshot<GnssStatusModel> _snapshot;
-  CirclePainter(AsyncSnapshot<GnssStatusModel> snapshot) {
+  late CircularBuffer gnssStore;
+  CirclePainter(AsyncSnapshot<GnssStatusModel> snapshot, CircularBuffer store) {
     _snapshot = snapshot;
+    gnssStore = store;
   }
   @override
   void paint(Canvas canvas, Size size) {
@@ -392,9 +460,12 @@ class CirclePainter extends CustomPainter {
     Offset centre = Offset(0, 0).translate(size.width / 2, size.height / 2);
     List<Offset> points = List<Offset>.empty(growable: true);
 
+
+
     for (int i = 0; i < _snapshot.data!.satelliteCount!; i++) {
       // draw a point in the direction of the satellite with a distance reletated to it's elevation.
       var status = _snapshot.data!.status![i];
+      //log.fine("Got a status: ${status.svid}");
       var angle = status.azimuthDegrees! * pi / 180.0;
 
       var distance =
@@ -464,4 +535,22 @@ Widget buildApiStatusPane(BuildContext context, ApiStatus apiStatus) {
       ),
     ],
   );
+}
+class DataStorage {
+  void writeData(List<String> lines) async {
+    final directory = await getExternalStorageDirectory();
+    File fileHandle = File("${directory?.path}/data${DateTime.now().toIso8601String()}.txt");
+    log.info("Writing to file: $fileHandle");
+    IOSink dataFile = fileHandle.openWrite();
+    dataFile.write("#\n# Header Description:\n#\n# Version: v2.0.0.1 Platform: 9 Manufacturer: samsung Model: SM-G973F");
+    dataFile.write("#\n# Raw,ElapsedRealtimeNanos,TimeNanos,LeapSecond,TimeUncertaintyNanos,FullBiasNanos,BiasNanos,BiasUncertaintyNanos,DriftNanosPerSecond,DriftUncertaintyNanosPerSecond,HardwareClockDiscontinuityCount,Svid,TimeOffsetNanos,State,ReceivedSvTimeNanos,ReceivedSvTimeUncertaintyNanos,Cn0DbHz,PseudorangeRateMetersPerSecond,PseudorangeRateUncertaintyMetersPerSecond,AccumulatedDeltaRangeState,AccumulatedDeltaRangeMeters,AccumulatedDeltaRangeUncertaintyMeters,CarrierFrequencyHz,CarrierCycles,CarrierPhase,CarrierPhaseUncertainty,MultipathIndicator,SnrInDb,ConstellationType,AgcDb,CarrierFrequencyHz,UserLatitude,UserLongitude,UserAltitude");
+    dataFile.write("#\n# Fix,Provider,Latitude,Longitude,Altitude,Speed,Accuracy,(UTC)TimeInMs,ElapsedRealtimeNanos\n#");
+    dataFile.write("# Nav,Svid,Type,Status,MessageId,Sub-messageId,Data(Bytes)\n# \n");
+      for (var i = 0; i < lines.length; i++) {
+        dataFile.write('${lines[i]}\n');
+      }
+
+    dataFile.close();
+   
+  }
 }

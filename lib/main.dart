@@ -15,7 +15,7 @@ import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 import 'package:logging/logging.dart';
 
 void main() {
-  Logger.root.level = kDebugMode ? Level.INFO : Level.WARNING;
+  Logger.root.level = kDebugMode ? Level.ALL : Level.WARNING;
   Logger.root.onRecord.listen((event) {
     logStore.addFromLogger(event);
   });
