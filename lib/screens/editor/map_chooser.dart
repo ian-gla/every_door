@@ -81,7 +81,7 @@ class _MapChooserPageState extends ConsumerState<MapChooserPage> {
     data = data.where((e) {
       switch (e.kind) {
         case ElementKind.amenity:
-          return editorMode == EditorMode.poi;
+          return editorMode == EditorMode.gnss;
         case ElementKind.micro:
           return editorMode == EditorMode.micromapping;
         case ElementKind.building:

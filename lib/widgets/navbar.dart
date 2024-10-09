@@ -102,13 +102,12 @@ class BrowserNavigationBar extends ConsumerWidget {
     const kEditorModes = [
       EditorMode.micromapping,
       EditorMode.gnss,
-      EditorMode.poi,
     ];
 
     final editorModeTooltips = {
       EditorMode.micromapping: loc.navMicromappingMode,
-      EditorMode.gnss: loc.navPoiMode,
-      EditorMode.poi: loc.navGNSSMode,
+      EditorMode.gnss: loc.navGNSSMode,
+      
     };
 
     final leftHand = ref.watch(editorSettingsProvider).leftHand;

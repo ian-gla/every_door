@@ -68,7 +68,7 @@ class _DuplicateWarningState extends ConsumerState<DuplicateWarning> {
     final isAmenity = isAmenityTags(widget.amenity.getFullTags(true));
     final mode = ref.read(editorModeProvider);
     return (isAmenity && mode == EditorMode.micromapping) ||
-        (!isAmenity && mode == EditorMode.poi);
+        (!isAmenity && mode == EditorMode.gnss);
   }
 
   onAmenityChange() {

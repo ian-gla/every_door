@@ -12,9 +12,7 @@ import 'package:every_door/providers/osm_api.dart';
 import 'package:every_door/providers/osm_data.dart';
 import 'package:every_door/providers/presets.dart';
 import 'package:every_door/screens/editor/map_chooser.dart';
-
 import 'package:every_door/screens/modes/navigate.dart';
-
 import 'package:every_door/screens/modes/poi_list.dart';
 import 'package:every_door/widgets/navbar.dart';
 import 'package:flutter/material.dart';
@@ -154,7 +152,6 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       editorPanel = NavigationPane();
     } else {
       switch (editorMode) {
-        case EditorMode.poi:
         case EditorMode.micromapping:
           editorPanel =
               PoiListPane(areaStatusPanel: statusPanel, isWide: isWide);
@@ -182,7 +179,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
           ],
         ),
         floatingActionButton: !isNavigation &&
-                (editorMode == EditorMode.poi ||
+                (editorMode == EditorMode.gnss ||
                     editorMode == EditorMode.micromapping)
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 50.0),
@@ -242,4 +239,3 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
     return null;
   }
 }
-
