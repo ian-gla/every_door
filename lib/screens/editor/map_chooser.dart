@@ -82,12 +82,10 @@ class _MapChooserPageState extends ConsumerState<MapChooserPage> {
       switch (e.kind) {
         case ElementKind.amenity:
           return editorMode == EditorMode.gnss;
-        case ElementKind.micro:
-          return editorMode == EditorMode.micromapping;
         case ElementKind.building:
           return false;
         case ElementKind.entrance:
-          return true;
+          return false;
         default:
           return e.isNew;
       }
@@ -116,20 +114,7 @@ class _MapChooserPageState extends ConsumerState<MapChooserPage> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loc.chooseLocation),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                ref.read(selectedImageryProvider.notifier).toggle();
-              });
-            },
-            icon: Icon(imagery == kOSMImagery ? Icons.map_outlined : Icons.map),
-            tooltip: loc.navImagery,
-          ),
-        ],
-      ),
+ 
       body: FlutterMap(
         mapController: controller,
         options: MapOptions(

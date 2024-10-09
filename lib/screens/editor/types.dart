@@ -48,8 +48,7 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
       switch (e.kind) {
         case ElementKind.amenity:
           return editorMode == EditorMode.gnss;
-        case ElementKind.micro:
-          return editorMode == EditorMode.micromapping;
+        
         default:
           return false;
       }
@@ -94,7 +93,7 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
     final locale = Localizations.localeOf(context);
     if (substring.length < 2 && !reCJK.hasMatch(substring)) {
       final editorMode = ref.read(editorModeProvider);
-      final defaultList = editorMode == EditorMode.micromapping
+      final defaultList = editorMode == EditorMode.gnss
           ? kDefaultMicroPresets
           : kDefaultPresets;
       final newPresets = await prov.getPresetsById(defaultList, locale: locale);

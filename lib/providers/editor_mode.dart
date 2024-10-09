@@ -12,22 +12,21 @@ final navigationModeProvider = StateProvider<bool>((ref) => false);
 
 enum EditorMode {
   gnss,
-  micromapping,
+
 }
 
 const kEditorModeIcons = {
   EditorMode.gnss: Icons.satellite,
-  EditorMode.micromapping: Icons.park,
+
 };
 
 const kEditorModeIconsOutlined = {
   EditorMode.gnss: Icons.satellite_outlined,
-  EditorMode.micromapping: Icons.park_outlined,
+
 };
 
 const kNextMode = {
-  EditorMode.micromapping: EditorMode.gnss,
-  EditorMode.gnss: EditorMode.micromapping,
+  EditorMode.gnss: EditorMode.gnss,
   };
 
 class EditorModeController extends StateNotifier<EditorMode> {

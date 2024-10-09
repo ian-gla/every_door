@@ -88,7 +88,7 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
 
     final provider = ref.read(osmDataProvider);
     final isMicromapping =
-        ref.read(editorModeProvider) == EditorMode.micromapping;
+        false;
     final isGNSS = ref.read(editorModeProvider) == EditorMode.gnss;
     final filter = ref.read(poiFilterProvider);
     final location = forceLocation ?? ref.read(effectiveLocationProvider)!;
@@ -127,7 +127,7 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
         case ElementKind.micro:
           return isMicromapping;
         case ElementKind.building:
-          return isGNSS;
+          return false;
         case ElementKind.address:
         case ElementKind.entrance:
           return false;
@@ -173,7 +173,7 @@ class GNSSListPageState extends ConsumerState<GNSSPane> {
   Widget build(BuildContext context) {
     final location = ref.read(effectiveLocationProvider);
     final isMicromapping =
-        ref.watch(editorModeProvider) == EditorMode.micromapping;
+        false;
     final isGNSS = ref.watch(editorModeProvider) == EditorMode.gnss;
     final isZoomedIn = ref.watch(microZoomedInProvider) != null;
     final apiStatus = ref.watch(apiStatusProvider);
