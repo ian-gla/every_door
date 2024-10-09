@@ -274,7 +274,7 @@ class _AmenityMapState extends ConsumerState<AmenityMap> {
 
     // When switching to micromapping, increase zoom.
     ref.listen(editorModeProvider, (_, next) {
-      if (next == EditorMode.micromapping) {
+      if (next == EditorMode.gnss) {
         if (mapController.camera.zoom < kMicroZoom) {
           mapController.move(mapController.camera.center, kMicroZoom);
           ref.read(zoomProvider.notifier).state = kMicroZoom;

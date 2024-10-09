@@ -15,7 +15,7 @@ import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 import 'package:logging/logging.dart';
 
 void main() {
-  Logger.root.level = kDebugMode ? Level.INFO : Level.WARNING;
+  Logger.root.level = kDebugMode ? Level.ALL : Level.WARNING;
   Logger.root.onRecord.listen((event) {
     logStore.addFromLogger(event);
   });
@@ -26,7 +26,7 @@ void main() {
       FlutterError.presentError(details);
       logStore.addFromFlutter(details);
     };
-    runApp(ProviderScope(child: const EveryDoorApp()));
+    runApp(ProviderScope(child: const BuildingsHeightApp()));
   }, (error, stack) {
     logStore.addFromZone(error, stack);
   });
@@ -39,8 +39,8 @@ installCertificate() async {
       .setTrustedCertificatesBytes(data.buffer.asUint8List());
 }
 
-class EveryDoorApp extends ConsumerWidget {
-  const EveryDoorApp({super.key});
+class BuildingsHeightApp extends ConsumerWidget {
+  const BuildingsHeightApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

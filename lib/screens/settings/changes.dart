@@ -94,7 +94,7 @@ class _ChangeListPageState extends ConsumerState {
         ref.read(osmApiProvider).buildOsmChange(changeList, null);
     final tempDir = await getTemporaryDirectory();
     File tmpFile =
-        File('${tempDir.path}/everydoor-${formatTime("YYmmdd")}.osc');
+        File('${tempDir.path}/buildingsheight-${formatTime("YYmmdd")}.osc');
     await tmpFile.writeAsString(changeset, flush: true);
     await Share.shareXFiles(
       [XFile(tmpFile.path, mimeType: 'application/xml')],

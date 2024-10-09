@@ -86,6 +86,10 @@
   "@navPoiMode": {
     "description": "Tooltip for the POI / amenity mode button on the nav panel."
   },
+  "navGNSSMode":"GNSS Measurement mode",
+    "@navGNSSMode": {
+      "description": "Tooltip for the GNSS Measurement mode button on the nav panel."
+    },
   "navMicromappingMode": "Micromapping mode",
   "@navMicromappingMode": {
     "description": "Tooltip for the micromapping mode button on the nav panel."

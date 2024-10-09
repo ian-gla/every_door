@@ -47,9 +47,8 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
     data = data.where((e) {
       switch (e.kind) {
         case ElementKind.amenity:
-          return editorMode == EditorMode.poi;
-        case ElementKind.micro:
-          return editorMode == EditorMode.micromapping;
+          return editorMode == EditorMode.gnss;
+        
         default:
           return false;
       }
@@ -94,7 +93,7 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
     final locale = Localizations.localeOf(context);
     if (substring.length < 2 && !reCJK.hasMatch(substring)) {
       final editorMode = ref.read(editorModeProvider);
-      final defaultList = editorMode == EditorMode.micromapping
+      final defaultList = editorMode == EditorMode.gnss
           ? kDefaultMicroPresets
           : kDefaultPresets;
       final newPresets = await prov.getPresetsById(defaultList, locale: locale);
@@ -128,7 +127,7 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
       final newPresets = await prov.getPresetsAutocomplete(substring,
           locale: locale,
           location: widget.location,
-          nsi: editorMode == EditorMode.poi
+          nsi: editorMode == EditorMode.gnss
               ? NsiQueryType.amenities
               : NsiQueryType.micromapping);
 
@@ -139,7 +138,7 @@ class _TypeChooserPageState extends ConsumerState<TypeChooserPage> {
         setState(() {
           resultsUpdated = DateTime.now();
           presets = newPresets;
-          if (editorMode == EditorMode.poi) updateNSISubtitles(context);
+          if (editorMode == EditorMode.gnss) updateNSISubtitles(context);
         });
       }
     }

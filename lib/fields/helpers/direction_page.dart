@@ -116,14 +116,6 @@ class _DirectionValuePageState extends ConsumerState<DirectionValuePage> {
       appBar: AppBar(
         title: Text(loc.chooseLocation),
         actions: [
-          if (widget.value != null)
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context, '-');
-              },
-              icon: Icon(Icons.delete),
-              tooltip: loc.fieldHoursClear,
-            ),
           IconButton(
             onPressed: () {
               setState(() {

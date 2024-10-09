@@ -11,44 +11,35 @@ final microZoomedInProvider = StateProvider<LatLngBounds?>((_) => null);
 final navigationModeProvider = StateProvider<bool>((ref) => false);
 
 enum EditorMode {
-  poi,
-  micromapping,
-  entrances,
-  notes,
+  gnss,
+
 }
 
 const kEditorModeIcons = {
-  EditorMode.poi: Icons.free_breakfast, // local_cafe icon is broken
-  EditorMode.micromapping: Icons.park,
-  EditorMode.entrances: Icons.home,
-  EditorMode.notes: Icons.note_alt,
+  EditorMode.gnss: Icons.satellite,
+
 };
 
 const kEditorModeIconsOutlined = {
-  EditorMode.poi: Icons.free_breakfast_outlined,
-  EditorMode.micromapping: Icons.park_outlined,
-  EditorMode.entrances: Icons.home_outlined,
-  EditorMode.notes: Icons.note_alt_outlined,
+  EditorMode.gnss: Icons.satellite_outlined,
+
 };
 
 const kNextMode = {
-  EditorMode.micromapping: EditorMode.poi,
-  EditorMode.poi: EditorMode.entrances,
-  EditorMode.entrances: EditorMode.notes,
-  EditorMode.notes: EditorMode.micromapping,
-};
+  EditorMode.gnss: EditorMode.gnss,
+  };
 
 class EditorModeController extends StateNotifier<EditorMode> {
   static const kModeKey = 'micromappingMode';
 
-  EditorModeController() : super(EditorMode.poi) {
+  EditorModeController() : super(EditorMode.gnss) {
     loadState();
   }
 
   loadState() async {
     final prefs = await SharedPreferences.getInstance();
     final modes = {for (final m in EditorMode.values) m.name: m};
-    state = modes[prefs.getString(kModeKey)] ?? EditorMode.poi;
+    state = modes[prefs.getString(kModeKey)] ?? EditorMode.gnss;
   }
 
   set(EditorMode newValue) async {

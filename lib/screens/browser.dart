@@ -12,10 +12,7 @@ import 'package:every_door/providers/osm_api.dart';
 import 'package:every_door/providers/osm_data.dart';
 import 'package:every_door/providers/presets.dart';
 import 'package:every_door/screens/editor/map_chooser.dart';
-import 'package:every_door/screens/modes/entrances.dart';
 import 'package:every_door/screens/modes/navigate.dart';
-import 'package:every_door/screens/modes/notes.dart';
-import 'package:every_door/screens/modes/poi_list.dart';
 import 'package:every_door/widgets/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
@@ -23,6 +20,8 @@ import 'package:flutter_dropdown_alert/model/data_alert.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'modes/gnss.dart';
 
 class BrowserPage extends ConsumerStatefulWidget {
   const BrowserPage();
@@ -152,16 +151,8 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
       editorPanel = NavigationPane();
     } else {
       switch (editorMode) {
-        case EditorMode.poi:
-        case EditorMode.micromapping:
-          editorPanel =
-              PoiListPane(areaStatusPanel: statusPanel, isWide: isWide);
-          break;
-        case EditorMode.entrances:
-          editorPanel = EntrancesPane(areaStatusPanel: statusPanel);
-          break;
-        case EditorMode.notes:
-          editorPanel = NotesPane(areaStatusPanel: statusPanel);
+        case EditorMode.gnss:
+          editorPanel = GNSSPane(areaStatusPanel: statusPanel, isWide: isWide);
           break;
       }
     }
@@ -182,9 +173,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
             BrowserNavigationBar(downloadAmenities: downloadAmenities),
           ],
         ),
-        floatingActionButton: !isNavigation &&
-                (editorMode == EditorMode.poi ||
-                    editorMode == EditorMode.micromapping)
+        floatingActionButton: false
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 50.0),
                 child: FloatingActionButton(
@@ -198,7 +187,7 @@ class _BrowserPageState extends ConsumerState<BrowserPage> {
                         builder: (context) => MapChooserPage(
                           creating: true,
                           location: location,
-                          closer: editorMode == EditorMode.micromapping,
+                          closer: editorMode == EditorMode.gnss,
                         ),
                         fullscreenDialog: true,
                       ),
