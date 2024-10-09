@@ -11,9 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Every Door</string>
+	<string>Building Heights</string>
 	<key>CFBundleDisplayName</key>
-	<string>Every Door</string>
+	<string>Building Heights</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -29,7 +29,7 @@
 			<string>oauth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>everydoor</string>
+				<string>buildingsheight</string>
 			</array>
 		</dict>
 	</array>

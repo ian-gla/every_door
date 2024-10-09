@@ -31,7 +31,7 @@ dependencies:
   flutter_secure_storage: ^8.1.0
   geolocator: ^12.0.0
   http: ^1.1.0
-  intl: ^0.19.0
+  intl: ^0.18.1
   latlong2: ^0.9.0
   line_icons: ^2.0.1
   logging: ^1.0.2
@@ -42,7 +42,6 @@ dependencies:
   phone_numbers_parser: ^4.2.0
   proximity_hash: ^2.1.0
   responsive_grid_list: ^1.2.3
-  raw_gnss: ^1.1.0+1
   sensors_plus: ^3.0.3
   settings_ui: ^2.0.2
   share_plus: ^7.1.0
@@ -52,7 +51,8 @@ dependencies:
   url_launcher: ^6.1.14
   uuid: ^4.3.3
   xml: ^6.3.0
-  circular_buffer: ^0.11.0
+  raw_gnss: ^1.1.0+1
+  circular_buffer: ^0.12.0
   system_clock: ^2.0.0
 
 dependency_overrides:
